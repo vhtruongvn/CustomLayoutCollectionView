@@ -1,0 +1,6 @@
+framework module Pods_AwesomeCollectionViewTests {
+  umbrella header "Pods-AwesomeCollectionViewTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
