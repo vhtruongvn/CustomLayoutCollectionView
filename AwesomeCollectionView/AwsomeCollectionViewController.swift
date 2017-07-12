@@ -11,7 +11,7 @@ import AVFoundation
 import NVActivityIndicatorView
 
 private let reuseIdentifier = "PhotoCell"
-private let sectionInsets = UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
+private let contentInsets = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
 
 class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndicatorViewable {
 
@@ -23,7 +23,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         self.title = "Truong Vo"
         
         collectionView!.backgroundColor = UIColor.white
-        collectionView!.contentInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
+        collectionView!.contentInset = contentInsets
         
         getData()
     }
@@ -31,6 +31,17 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        if UIDevice.current.orientation.isLandscape {
+            print("Landscape")
+        } else {
+            print("Portrait")
+        }
+        
+        //collectionView!.reloadData()
+        collectionView!.collectionViewLayout.invalidateLayout()
     }
 
     /*
