@@ -120,6 +120,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         
         let photo = photoForIndexPath(indexPath)
         
+        // add buton
         if photo.isAddButton {
             cell.activityIndicator.stopAnimating()
             cell.imageView.image = UIImage(named: "icon_add")
@@ -128,6 +129,12 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
             return cell
         }
         
+        // photo cell's extra info
+        cell.cellLabel.text = "(\(indexPath.section):\(indexPath.row))"
+        cell.deleteButton.isHidden = false
+        cell.deleteButton.addTarget(self, action: #selector(AwsomeCollectionViewController.deleteButtonTapped(sender:event:)), for: .touchUpInside)
+        
+        // load image for photo cell
         cell.activityIndicator.stopAnimating()
         guard photo.image == nil else {
             cell.imageView.image = photo.image
@@ -135,6 +142,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         }
         
         cell.activityIndicator.startAnimating()
+        cell.imageView.image = UIImage(named: "image_placeholder")
         photo.loadImage { loadedPhoto, error in
             cell.activityIndicator.stopAnimating()
             
@@ -147,10 +155,6 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
             }
         }
         
-        cell.cellLabel.text = "(\(indexPath.section):\(indexPath.row))"
-        cell.deleteButton.isHidden = false
-        cell.deleteButton.addTarget(self, action: #selector(AwsomeCollectionViewController.deleteButtonTapped(sender:event:)), for: .touchUpInside)
-        
         return cell
     }
     
@@ -159,8 +163,6 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         let touchPosition: CGPoint = touch.location(in: self.view)
         
         if let indexPath = collectionView!.indexPathForItem(at: touchPosition) {
-            print(indexPath)
-            
             let photo = photoForIndexPath(indexPath)
             
             let alert = UIAlertController(title: "", message: "Do you really want to delete the item with identifier \(photo.photoID)?", preferredStyle: .alert)
@@ -171,7 +173,13 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
                                             print("Deleting \(indexPath)")
                                             if let index = self.photos.index(of: photo) {
                                                 self.photos.remove(at: index)
-                                                self.collectionView!.reloadData()
+                                                if indexPath.section == 0 {
+                                                    self.collectionView!.reloadData()
+                                                } else {
+                                                    self.collectionView!.performBatchUpdates({
+                                                        self.collectionView!.deleteItems(at: [indexPath])
+                                                    }, completion: nil)
+                                                }
                                                 self.collectionView!.collectionViewLayout.invalidateLayout()
                                             }
             }))
@@ -188,6 +196,48 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
     }
 
     // MARK: UICollectionViewDelegate
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("Tapped cell \(indexPath)")
+        
+        let photo = photoForIndexPath(indexPath)
+        print(photo.description())
+        
+        if photo.isAddButton {
+            let alert = UIAlertController(title: "Add Photo", message: "Note: photo url cannot be empty", preferredStyle: .alert)
+            alert.addTextField { (textField) in
+                textField.placeholder = "Enter photo url here"
+                textField.keyboardType = .URL
+            }
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "OK",
+                                          style: .default,
+                                          handler: { [weak alert] (_) in
+                                            let textField = alert!.textFields![0]
+                                            let urlString = textField.text!
+                                            if urlString.characters.count > 0 {
+                                                print("Add photo with url = \(urlString)")
+                                                
+                                                let uuid = UUID().uuidString
+                                                let photo = Photo(photoID: uuid, imageURLString: urlString)
+                                                self.photos.insert(photo, at: self.photos.count - 1)
+                                                if self.photos.count > numberOfColumns {
+                                                    self.collectionView!.reloadData()
+                                                } else {
+                                                    self.collectionView!.performBatchUpdates({
+                                                        self.collectionView!.insertItems(at: [indexPath])
+                                                    }, completion: nil)
+                                                }
+                                                self.collectionView!.collectionViewLayout.invalidateLayout()
+                                            }
+            }))
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: "", message: "You have selected the item with identifier \(photo.photoID)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
 
     /*
     // Uncomment this method to specify if the specified item should be highlighted during tracking

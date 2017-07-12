@@ -59,6 +59,10 @@ class Photo: Equatable {
         }) .resume()
     }
     
+    func description() -> String {
+        return "Photo [uuid : \(photoID) - imageURLString : \(imageURLString) - isAddButton : \(isAddButton)]"
+    }
+    
 }
 
 func == (lhs: Photo, rhs: Photo) -> Bool {

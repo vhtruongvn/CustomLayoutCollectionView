@@ -14,8 +14,8 @@
         <scene sceneID="vwu-ay-YkH">
             <objects>
                 <navigationController id="yHV-dl-By2" sceneMemberID="viewController">
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Ti5-es-lkp">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ti5-es-lkp">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -31,8 +31,8 @@
         <scene sceneID="OK5-hv-yKT">
             <objects>
                 <collectionViewController storyboardIdentifier="AwsomeCollectionViewController" id="faL-bR-fEi" customClass="AwsomeCollectionViewController" customModule="AwesomeCollectionView" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="7nP-Kd-Bgr">
-                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="7nP-Kd-Bgr">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewLayout key="collectionViewLayout" id="nUD-dw-x3b" customClass="CustomLayout" customModule="AwesomeCollectionView" customModuleProvider="target"/>
@@ -93,7 +93,7 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" id="HUN-X9-Y4L"/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="evY-Au-Cce" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
