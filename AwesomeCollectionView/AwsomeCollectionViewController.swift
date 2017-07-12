@@ -67,7 +67,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
             
             // last object is used as add button
             let addButton = Photo(photoID: "", imageURLString: "")
-            addButton.isAddButton = true
+            addButton.isButton = true
             _photos.append(addButton)
             
             self.photos = _photos
@@ -87,32 +87,25 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
     }
     
     func photoForIndexPath(_ indexPath: IndexPath) -> Photo {
-        if photos.count > numberOfColumns {
-            return photos[(indexPath as NSIndexPath).section * numberOfColumns + (indexPath as NSIndexPath).row]
-        } else {
-            return photos[(indexPath as NSIndexPath).row]
-        }
+        return photos[indexPath.row]
+    }
+    
+    func removePhotoAtIndexPath(_ indexPath: IndexPath) {
+        photos.remove(at: indexPath.row)
+    }
+    
+    func insertPhotoAtIndexPath(photo: Photo, indexPath: IndexPath) {
+        photos.insert(photo, at: indexPath.row)
     }
 
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if photos.count > numberOfColumns {
-            if section == 0 {
-                return photos[0..<numberOfColumns].count
-            }
-            return photos[numberOfColumns..<photos.count].count
-        } else {
-            if section == 0 {
-                return photos.count
-            }
-            
-            return 0
-        }
+        return photos.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -121,7 +114,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         let photo = photoForIndexPath(indexPath)
         
         // add buton
-        if photo.isAddButton {
+        if photo.isButton {
             cell.activityIndicator.stopAnimating()
             cell.imageView.image = UIImage(named: "icon_add")
             cell.cellLabel.text = ""
@@ -171,28 +164,50 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
                                           style: .default,
                                           handler: {(alert: UIAlertAction!) in
                                             print("Deleting \(indexPath)")
-                                            if let index = self.photos.index(of: photo) {
-                                                self.photos.remove(at: index)
-                                                if indexPath.section == 0 {
-                                                    self.collectionView!.reloadData()
-                                                } else {
-                                                    self.collectionView!.performBatchUpdates({
-                                                        self.collectionView!.deleteItems(at: [indexPath])
-                                                    }, completion: nil)
-                                                }
-                                                self.collectionView!.collectionViewLayout.invalidateLayout()
+                                            
+                                            self.removePhotoAtIndexPath(indexPath)
+                                            if indexPath.section == 0 {
+                                                self.collectionView!.reloadData()
+                                            } else {
+                                                self.collectionView!.performBatchUpdates({
+                                                    self.collectionView!.deleteItems(at: [indexPath])
+                                                }, completion: nil)
                                             }
+                                            self.collectionView!.collectionViewLayout.invalidateLayout()
             }))
             self.present(alert, animated: true, completion: nil)
         }
     }
     
-    override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        /*var sourceResults = searches[(sourceIndexPath as NSIndexPath).section].searchResults
-        let flickrPhoto = sourceResults.remove(at: (sourceIndexPath as NSIndexPath).row)
+    override func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        let photo = photoForIndexPath(indexPath)
+        if photo.isButton {
+            return false
+        }
+        return true
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, targetIndexPathForMoveFromItemAt originalIndexPath: IndexPath, toProposedIndexPath proposedIndexPath: IndexPath) -> IndexPath {
+        print("proposedIndexPath = \(proposedIndexPath)")
         
-        var destinationResults = searches[(destinationIndexPath as NSIndexPath).section].searchResults
-        destinationResults.insert(flickrPhoto, at: (destinationIndexPath as NSIndexPath).row)*/
+        let destinationPhoto = photoForIndexPath(proposedIndexPath)
+        if destinationPhoto.isButton {
+            return IndexPath(row: proposedIndexPath.row - 1, section: proposedIndexPath.section)
+        }
+        
+        return proposedIndexPath
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let sourcePhoto = photoForIndexPath(sourceIndexPath)
+        
+        print("Remove photo at \(sourceIndexPath)")
+        removePhotoAtIndexPath(sourceIndexPath)
+        
+        print("Insert photo at \(destinationIndexPath)")
+        insertPhotoAtIndexPath(photo: sourcePhoto, indexPath: destinationIndexPath)
+        
+        collectionView.reloadData()
     }
 
     // MARK: UICollectionViewDelegate
@@ -203,7 +218,7 @@ class AwsomeCollectionViewController: UICollectionViewController, NVActivityIndi
         let photo = photoForIndexPath(indexPath)
         print(photo.description())
         
-        if photo.isAddButton {
+        if photo.isButton {
             let alert = UIAlertController(title: "Add Photo", message: "Note: photo url cannot be empty", preferredStyle: .alert)
             alert.addTextField { (textField) in
                 textField.placeholder = "Enter photo url here"

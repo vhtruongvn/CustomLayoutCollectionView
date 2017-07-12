@@ -12,7 +12,7 @@ class Photo: Equatable {
     let photoID: String
     let imageURLString: String
     var image: UIImage?
-    var isAddButton: Bool = false
+    var isButton: Bool = false
     
     init (photoID: String, imageURLString: String) {
         self.photoID = photoID
@@ -60,7 +60,7 @@ class Photo: Equatable {
     }
     
     func description() -> String {
-        return "Photo [uuid : \(photoID) - imageURLString : \(imageURLString) - isAddButton : \(isAddButton)]"
+        return "Photo [uuid : \(photoID) - imageURLString : \(imageURLString) - isAddButton : \(isButton)]"
     }
     
 }

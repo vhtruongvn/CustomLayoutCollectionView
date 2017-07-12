@@ -66,7 +66,7 @@ class APIClient: NSObject {
         // Load json file async
         // DispatchQueue.global().async {
         // Add 2 secs of delay to simulate a network request
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
             if let path = Bundle.main.url(forResource: "test", withExtension: "json") {
                 do {
                     let data = try Data(contentsOf: path)
